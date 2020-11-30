@@ -16,6 +16,7 @@ on:
 env:
   DOCKER_REGISTRY: docker.io
   DOCKER_REGISTRY_NAMESPACE: jflinn18
+  DOCKER_CONTENT_TRUST: 1
   IMAGE_NAME: trust_test
 
 jobs:
@@ -52,7 +53,10 @@ jobs:
         run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
       - name: Log into registry
-        run: echo "${{ secrets.DOCKER_TOKEN }}" | docker login $DOCKER_REGISTRY -u "jflinn18" --password-stdin
+        run: |
+          echo "${{ secrets.DOCKER_TOKEN }}" | docker login $DOCKER_REGISTRY -u $DOCKER_REGISTRY_NAMESPACE --password-stdin
+          echo "${{ secrets.DELEGATION_KEY }}" > ~/automaton.key
+          chmod 600 ~/automaton.key
 
       - name: Push image
         run: |
@@ -70,11 +74,16 @@ jobs:
           # Use Docker `latest` tag convention
           [ "$VERSION" == "main" ] && VERSION=latest
 
+          echo DOCKER_CONTENT_TRUST=$DOCKER_CONTENT_TRUST
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          #docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-          #docker push $IMAGE_ID:$VERSION
+          docker trust signer add --key ~/automaton.key automaton $IMAGE_ID
+          docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
+          docker trust sign $IMAGE_ID:$VERSION
+          docker push $IMAGE_ID:$VERSION
           
-          docker tag $IMAGE_NAME $IMAGE_ID:unsigned
-          docker push $IMAGE_ID:unsigned
+          #docker tag $IMAGE_NAME $IMAGE_ID:unsigned
+          #docker push $IMAGE_ID:unsigned
+        env:
+          DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${{ secrets.DELEGATION_KEY_PASSPHRASE }}
