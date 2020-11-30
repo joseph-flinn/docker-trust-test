@@ -86,4 +86,4 @@ jobs:
           #docker tag $IMAGE_NAME $IMAGE_ID:unsigned
           #docker push $IMAGE_ID:unsigned
         env:
-          DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${{ secrets.DELEGATION_KEY_PASSPHRASE }}
+          DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE: ${{ secrets.DELEGATION_KEY_PASSPHRASE }}
