@@ -55,8 +55,10 @@ jobs:
       - name: Log into registry
         run: |
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login $DOCKER_REGISTRY -u $DOCKER_REGISTRY_NAMESPACE --password-stdin
-          echo "${{ secrets.DELEGATION_KEY }}" > ~/signer.key
+          echo "${{ secrets.DOCKER_DELEGATION_KEY }}" > ~/signer.key
+          echo "${{ secrets.DOCKER_DELEGATION_CRT }}" > ~/signer.crt
           chmod 600 ~/signer.key
+          chmod 600 ~/signer.crt
 
       - name: Push image
         run: |
@@ -78,7 +80,9 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          docker trust signer add --key ~/signer.key github $IMAGE_ID
+          docker trust key load ~/signer.key --name github
+          docker trust signer add --key ~/signer.crt github $IMAGE_ID
+
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker trust sign $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
