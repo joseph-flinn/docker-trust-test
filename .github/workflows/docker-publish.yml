@@ -17,7 +17,7 @@ env:
   DOCKER_REGISTRY: docker.io
   DOCKER_REGISTRY_NAMESPACE: jflinn18
   DOCKER_CONTENT_TRUST: 1
-  IMAGE_NAME: trust_test
+  IMAGE_NAME: trust_poc
 
 jobs:
   # Run tests.
