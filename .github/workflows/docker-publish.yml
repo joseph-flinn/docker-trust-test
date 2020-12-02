@@ -80,9 +80,6 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          docker trust key load ~/signer.key --name github
-          docker trust signer add --key ~/signer.crt github $IMAGE_ID
-
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker trust sign $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
