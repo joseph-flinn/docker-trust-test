@@ -55,10 +55,19 @@ jobs:
       - name: Log into registry
         run: |
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login $DOCKER_REGISTRY -u $DOCKER_REGISTRY_NAMESPACE --password-stdin
-          echo "${{ secrets.DOCKER_DELEGATION_KEY }}" > ~/.notary/private/signer.key
-          echo "${{ secrets.DOCKER_REPO_KEY }}" > ~/.notary/private/repo.key
+          echo "${{ secrets.DOCKER_DELEGATION_KEY }}" > ~/.docker/trust/private/signer.key
+          echo "${{ secrets.DOCKER_REPO_KEY }}" > ~/.docker/trust/private/repo.key
           chmod 600 ~/.docker/trust/private/signer.key
           chmod 600 ~/.docker/trust/private/repo.key
+
+      - name: Install and setup notary for debugging
+        run: |
+          wget https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64
+          mv notary-Linux-amd64 /usr/local/bin/notary
+          chmod +x /usr/local/bin/notary
+          mkdir ~/.notary
+          echo "{ \"trust_dir\": \"~/.docker/trust\", \"remote_server\": { \"url\": \"https://notary.docker.io\"} }" > ~/.notary/config.json
+          notary key list
 
       - name: Push image
         run: |
