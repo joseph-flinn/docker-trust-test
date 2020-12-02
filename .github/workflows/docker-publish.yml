@@ -55,8 +55,8 @@ jobs:
       - name: Log into registry
         run: |
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login $DOCKER_REGISTRY -u $DOCKER_REGISTRY_NAMESPACE --password-stdin
-          echo "${{ secrets.DOCKER_DELEGATION_KEY }}" > ~/.docker/trust/private/signer.key
-          echo "${{ secrets.DOCKER_REPO_KEY }}" > ~/.docker/trust/private/repo.key
+          echo "${{ secrets.DOCKER_DELEGATION_KEY }}" > ~/.notary/private/signer.key
+          echo "${{ secrets.DOCKER_REPO_KEY }}" > ~/.notary/private/repo.key
           chmod 600 ~/.docker/trust/private/signer.key
           chmod 600 ~/.docker/trust/private/repo.key
 
