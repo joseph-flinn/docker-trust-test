@@ -90,9 +90,9 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          echo Notary Key List
-          notary key list
-          echo -e "\n\n"
+          #echo Notary Key List
+          #notary key list
+          #echo -e "\n\n"
 
           #export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${{ secrets.DOCKER_REPO_KEY_PASSPHRASE }}
           #docker trust key load ~/.docker/trust/private/${{ secrets.DOCKER_REPO_KEY_ID }}.key
