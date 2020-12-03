@@ -20,30 +20,9 @@ env:
   IMAGE_NAME: test3
 
 jobs:
-  # Run tests.
-  # See also https://docs.docker.com/docker-hub/builds/automated-testing/
-
-  # test:
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #     - uses: actions/checkout@v2
-
-  #     - name: Run tests
-  #       run: |
-  #         if [ -f docker-compose.test.yml ]; then
-  #           docker-compose --file docker-compose.test.yml build
-  #           docker-compose --file docker-compose.test.yml run sut
-  #         else
-  #           docker build . --file Dockerfile
-  #         fi
-
   # Push image to GitHub Packages.
   # See also https://docs.docker.com/docker-hub/builds/
   push:
-    # Ensure test job passes before pushing image.
-    #needs: test
-
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
 
@@ -60,15 +39,6 @@ jobs:
           echo "${{ secrets.DOCKER_REPO_KEY }}" > ~/.docker/trust/private/${{ secrets.DOCKER_REPO_KEY_ID }}.key
           chmod 600 ~/.docker/trust/private/${{ secrets.DOCKER_DELEGATION_KEY_ID }}.key
           chmod 600 ~/.docker/trust/private/${{ secrets.DOCKER_REPO_KEY_ID }}.key
-
-      # - name: Install and setup notary for debugging
-      #   run: |
-      #     wget https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64
-      #     echo PATH=$PATH
-      #     sudo mv notary-Linux-amd64 /usr/local/bin/notary
-      #     chmod +x /usr/local/bin/notary
-      #     mkdir ~/.notary
-      #     echo "{ \"trust_dir\": \"~/.docker/trust\", \"remote_server\": { \"url\": \"https://notary.docker.io\"} }" > ~/.notary/config.json
 
       - name: Push image
         run: |
@@ -90,18 +60,8 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          #echo Notary Key List
-          #notary key list
-          #echo -e "\n\n"
-
-          #export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${{ secrets.DOCKER_REPO_KEY_PASSPHRASE }}
-          #docker trust key load ~/.docker/trust/private/${{ secrets.DOCKER_REPO_KEY_ID }}.key
           export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${{ secrets.DOCKER_DELEGATION_KEY_PASSPHRASE }}
-          #docker trust key load ~/.docker/trust/private/${{ secrets.DOCKER_DELEGATION_KEY_ID }}.key --name github
 
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
           docker trust sign $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
-          
-          #docker tag $IMAGE_NAME $IMAGE_ID:unsigned
-          #docker push $IMAGE_ID:unsigned
