@@ -81,7 +81,7 @@ jobs:
           echo VERSION=$VERSION
 
           export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${{ secrets.DOCKER_DELEGATION_KEY_PASSPHRASE }}
-          docker trust key load ~/.docker/trust/private/${{ secrets.DOCKER_DELGATION_KEY_ID }}.key --name github
+          docker trust key load ~/.docker/trust/private/${{ secrets.DOCKER_DELEGATION_KEY_ID }}.key --name github
           export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${{ secrets.DOCKER_REPO_KEY_PASSPHRASE }}
           docker trust key load ~/.docker/trust/private/${{ secrets.DOCKER_REPO_KEY_ID }}.key
 
