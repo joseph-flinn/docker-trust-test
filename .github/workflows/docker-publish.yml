@@ -35,10 +35,13 @@ jobs:
       - name: Log into registry
         run: |
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login $DOCKER_REGISTRY -u $DOCKER_REGISTRY_NAMESPACE --password-stdin
-          echo "${{ secrets.DOCKER_DELEGATION_KEY }}" > ~/.docker/trust/private/${{ secrets.DOCKER_DELEGATION_KEY_ID }}.key
-          echo "${{ secrets.DOCKER_REPO_KEY }}" > ~/.docker/trust/private/${{ secrets.DOCKER_REPO_KEY_ID }}.key
-          chmod 600 ~/.docker/trust/private/${{ secrets.DOCKER_DELEGATION_KEY_ID }}.key
-          chmod 600 ~/.docker/trust/private/${{ secrets.DOCKER_REPO_KEY_ID }}.key
+          echo "${{ secrets.DOCKER_DELEGATION_KEY }}" > ~/.docker/trust/private/$DOCKER_DELEGATION_KEY_ID.key
+          echo "${{ secrets.DOCKER_REPO_KEY }}" > ~/.docker/trust/private/$DOCKER_REPO_KEY_ID.key
+          chmod 600 ~/.docker/trust/private/$DOCKER_DELEGATION_KEY_ID.key
+          chmod 600 ~/.docker/trust/private/$DOCKER_REPO_KEY_ID.key
+        env:
+          DOCKER_DELEGATION_KEY_ID: bf6b710b97ef0c02c0ce315af51a6647ebec2ffc9e908d2be59f0c9001cdc084
+          DOCKER_REPO_API_ID: 48842c4899e8d384fcf00039b2f2f381e7d00f25044c108c419087b4a07c389b
 
       - name: Push image
         run: |
