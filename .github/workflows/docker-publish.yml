@@ -33,6 +33,7 @@ jobs:
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login $DOCKER_REGISTRY -u $DOCKER_REGISTRY_NAMESPACE --password-stdin
 
       - name: Setup Docker Trust
+        run: |
           echo "${{ secrets.DOCKER_DELEGATION_KEY }}" > ~/.docker/trust/private/$DOCKER_DELEGATION_KEY_ID.key
           echo "${{ secrets.DOCKER_REPO_KEY }}" > ~/.docker/trust/private/$DOCKER_REPO_KEY_ID.key
         env:
