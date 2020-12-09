@@ -34,6 +34,7 @@ jobs:
 
       - name: Setup Docker Trust
         run: |
+          mkdir -p ~/.docker/trust/private
           echo "${{ secrets.DOCKER_DELEGATION_KEY }}" > ~/.docker/trust/private/$DOCKER_DELEGATION_KEY_ID.key
           echo "${{ secrets.DOCKER_REPO_KEY }}" > ~/.docker/trust/private/$DOCKER_REPO_KEY_ID.key
         env:
