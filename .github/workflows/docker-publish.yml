@@ -16,7 +16,6 @@ on:
 env:
   DOCKER_REGISTRY: docker.io
   DOCKER_REGISTRY_NAMESPACE: jflinn18
-  DOCKER_CONTENT_TRUST: 1
   IMAGE_NAME: test3
 
 jobs:
@@ -29,17 +28,19 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Build image
-        run: docker build . --file Dockerfile --tag $IMAGE_NAME
-
       - name: Log into registry
         run: |
           echo "${{ secrets.DOCKER_TOKEN }}" | docker login $DOCKER_REGISTRY -u $DOCKER_REGISTRY_NAMESPACE --password-stdin
+
+      - name: Setup Docker Trust
           echo "${{ secrets.DOCKER_DELEGATION_KEY }}" > ~/.docker/trust/private/$DOCKER_DELEGATION_KEY_ID.key
           echo "${{ secrets.DOCKER_REPO_KEY }}" > ~/.docker/trust/private/$DOCKER_REPO_KEY_ID.key
         env:
           DOCKER_DELEGATION_KEY_ID: bf6b710b97ef0c02c0ce315af51a6647ebec2ffc9e908d2be59f0c9001cdc084
           DOCKER_REPO_KEY_ID: 48842c4899e8d384fcf00039b2f2f381e7d00f25044c108c419087b4a07c389b
+
+      - name: Build image
+        run: docker build . --file Dockerfile --tag $IMAGE_NAME
 
       - name: Push image
         run: |
@@ -61,8 +62,9 @@ jobs:
           echo IMAGE_ID=$IMAGE_ID
           echo VERSION=$VERSION
 
-          export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=${{ secrets.DOCKER_DELEGATION_KEY_PASSPHRASE }}
-
           docker tag $IMAGE_NAME $IMAGE_ID:$VERSION
-          docker trust sign $IMAGE_ID:$VERSION
+          #docker trust sign $IMAGE_ID:$VERSION
           docker push $IMAGE_ID:$VERSION
+        env:
+          DOCKER_CONTENT_TRUST: 1
+          DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE: ${{ secrets.DOCKER_DELEGATION_KEY_PASSPHRASE }}
